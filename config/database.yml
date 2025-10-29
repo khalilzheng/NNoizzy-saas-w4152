@@ -1,0 +1,23 @@
+ 
+sqlite_default: &sqlite_default
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  <<: *sqlite_default
+  database: storage/development.sqlite3
+
+test:
+  <<: *sqlite_default
+  database: storage/test.sqlite3
+
+ 
+production:
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  url: <%= ENV["DATABASE_URL"] %>
+ 
+  variables:
+    statement_timeout: 5000

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Noizzy</title>
+    <meta charset="utf-8" />
+    <style>
+      body { font-family: system-ui, Arial, sans-serif; margin: 24px; }
+      .row { margin: 12px 0; }
+      button { margin-right: 8px; }
+      #timer { font-weight: bold; }
+      #current { font-weight: bold; }
+      .vol { width: 240px; vertical-align: middle; }
+    </style>
+    <link rel="icon" href="data:,">
+  </head>
+  <body>
+    <h1>Noizzy</h1>
+
+    <div class="row">
+      <button id="instant" onclick="instantStart()">Instant Start</button>
+      <span>Timer: <span id="timer">00:00</span></span>
+    </div>
+
+    <div class="row">
+      <span>Current: <span id="current">None</span></span>
+    </div>
+
+    <div class="row" id="sound-buttons">
+      <button type="button" aria-label="Rain"  onclick="chooseSound('Rain')">Rain</button>
+      <button type="button" aria-label="Ocean" onclick="chooseSound('Ocean')">Ocean</button>
+      <button type="button" aria-label="Fan"   onclick="chooseSound('Fan')">Fan</button>
+    </div>
+
+    <div class="row">
+      <button id="play"  onclick="play()"  style="display:none;">Play</button>
+      <button id="pause" onclick="pause()" style="display:none;">Pause</button>
+    </div>
+
+    <div class="row">
+      <label for="volume">Volume</label>
+      <input id="volume" class="vol" type="range" min="0" max="1" step="0.01" value="0.5"
+             oninput="setVolume(this.value)" />
+      <span id="volDisplay">0.5</span>
+    </div>
+
+    <div class="row" id="favorite-buttons">
+      <button type="button" onclick="favorite('Rain')">Favorite Rain</button>
+      <button type="button" onclick="favorite('Ocean')">Favorite Ocean</button>
+      <button type="button" onclick="favorite('Fan')">Favorite Fan</button>
+    </div>
+
+    <script>
+ 
+      const LOCAL_AUDIO = {
+        "Rain":  "<%= asset_path 'rain.mp3'  rescue '/assets/rain.mp3'  %>",
+        "Ocean": "<%= asset_path 'ocean.mp3' rescue '/assets/ocean.mp3' %>",
+        "Fan":   "<%= asset_path 'fan.mp3'   rescue '/assets/fan.mp3'   %>",
+      };
+
+ 
+      const CDN_FALLBACK = {
+        "Rain":  "https://cdn.pixabay.com/download/audio/2021/11/02/audio_c06b.mp3?filename=rain-ambient-110397.mp3",
+        "Ocean": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_6f43.mp3?filename=ocean-waves-ambient-21305.mp3",
+        "Fan":   "https://cdn.pixabay.com/download/audio/2022/01/15/audio_2a1b.mp3?filename=fan-noise-16750.mp3"
+      };
+
+ 
+      let currentSound = null;
+      let startedAt = null;
+      let timerInterval = null;
+      let isPlaying = false;
+      let volume = 0.5;
+      let audioPlayer = null;  
+
+ 
+      function fmt(ms) {
+        const s = Math.floor(ms / 1000);
+        const mm = String(Math.floor(s / 60)).padStart(2, '0');
+        const ss = String(s % 60).padStart(2, '0');
+        return mm + ":" + ss;
+      }
+      function updateTimer() {
+        if (!startedAt) return;
+        const ms = Date.now() - startedAt.getTime();
+        document.getElementById('timer').textContent = fmt(ms);
+      }
+      function ensureTimerRunning() {
+        if (!timerInterval) timerInterval = setInterval(updateTimer, 500);
+      }
+      function setButtonsForState() {
+        const playBtn  = document.getElementById('play');
+        const pauseBtn = document.getElementById('pause');
+        if (isPlaying) {
+          playBtn.style.display  = 'none';
+          pauseBtn.style.display = 'inline-block';
+        } else {
+          playBtn.style.display  = 'inline-block';
+          pauseBtn.style.display = 'none';
+        }
+      }
+
+   
+      async function setupAndPlay(name) {
+     
+        if (audioPlayer) { audioPlayer.pause(); audioPlayer.currentTime = 0; }
+
+        const trySources = [LOCAL_AUDIO[name], CDN_FALLBACK[name]].filter(Boolean);
+    
+        for (const src of trySources) {
+          try {
+            audioPlayer = new Audio(src);
+            audioPlayer.loop = true;
+            audioPlayer.volume = volume;
+            await audioPlayer.play();
+             
+            return true;
+          } catch (e) {
+             
+          }
+        }
+         
+        audioPlayer = null;
+        return false;
+      }
+
+       
+      async function chooseSound(name) {
+        currentSound = name;
+        document.getElementById('current').textContent = name;
+
+        const ok = await setupAndPlay(name);
+        if (!ok) {
+          alert("invalid music");
+          isPlaying = false;
+          setButtonsForState();
+          return;
+        }
+
+        if (!startedAt) startedAt = new Date();
+        isPlaying = true;
+        ensureTimerRunning();
+        setButtonsForState();
+      }
+
+      function instantStart() { chooseSound('Rain'); }
+
+      async function play()  {
+        if (audioPlayer) {
+          try { await audioPlayer.play(); } catch (e) {}
+        } else if (currentSound) {
+          await chooseSound(currentSound);
+        } else {
+          await chooseSound('Rain');
+        }
+        isPlaying = true;
+        ensureTimerRunning();
+        setButtonsForState();
+      }
+
+      function pause() {
+        if (audioPlayer) audioPlayer.pause();
+        isPlaying = false;
+        setButtonsForState();
+      }
+
+      function setVolume(v) {
+        volume = parseFloat(v);
+        document.getElementById('volDisplay').textContent = volume.toFixed(2);
+        if (audioPlayer) audioPlayer.volume = volume;
+      }
+
+       
+      function favorite(name) {
+        const raw = localStorage.getItem('favorites') || '[]';
+        const arr = JSON.parse(raw);
+        if (!arr.includes(name)) arr.push(name);
+        localStorage.setItem('favorites', JSON.stringify(arr));
+      }
+
+       
+      window.instantStart = instantStart;
+      window.chooseSound  = chooseSound;
+      window.play         = play;
+      window.pause        = pause;
+      window.setVolume    = setVolume;
+      window.favorite     = favorite;
+
+      document.getElementById('volDisplay').textContent = volume.toFixed(2);
+    </script>
+  </body>
+</html>
