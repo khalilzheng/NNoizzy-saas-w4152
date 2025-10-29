@@ -15,7 +15,7 @@ gem "jbuilder"
 group :development, :test do
   gem "sqlite3", "~> 1.7"
 
-  gem "rspec-rails", "~> 6.0"
+  gem "rspec-rails", "~> 7.1"
   gem "cucumber-rails", require: false
   gem "database_cleaner-active_record"
   gem "capybara"
