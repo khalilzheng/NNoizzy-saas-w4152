@@ -6,7 +6,7 @@ ruby "3.4.7"
 
 gem "rails", "~> 7.1.3"
 gem "pg", "~> 1.5"
-gem "puma", "~> 6.4"
+gem "puma", "~> 7.1"
 gem "sassc-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
