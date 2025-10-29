@@ -1,0 +1,93 @@
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2025-10-29 18:23:38.906300', '2025-10-29 18:23:38.906302') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateSounds (20251029010101)
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateSounds (20251029010101)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (2.6ms)[0m  [1m[35mCREATE TABLE "sounds" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "file_url" varchar, "audio_url" varchar, "image_url" varchar, "is_curated" boolean, "curated" boolean, "duration_ms" integer, "loop_ms" integer, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_sounds_on_name" ON "sounds" ("name")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20251029010101') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+Migrating to RemoveDefaultsFromSounds (20251029120808)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "asounds" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "file_url" varchar DEFAULT NULL, "audio_url" varchar DEFAULT NULL, "image_url" varchar DEFAULT NULL, "is_curated" boolean DEFAULT NULL, "curated" boolean DEFAULT NULL, "duration_ms" integer DEFAULT NULL, "loop_ms" integer DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_asounds_on_name" ON "asounds" ("name")[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "asounds" ("id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at")
+                     SELECT "id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at" FROM "sounds"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "sounds"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "sounds" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "file_url" varchar DEFAULT NULL, "audio_url" varchar DEFAULT NULL, "image_url" varchar DEFAULT NULL, "is_curated" boolean DEFAULT NULL, "curated" boolean DEFAULT NULL, "duration_ms" integer DEFAULT NULL, "loop_ms" integer DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_sounds_on_name" ON "sounds" ("name")[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "sounds" ("id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at")
+                     SELECT "id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at" FROM "asounds"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "asounds"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "asounds" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "file_url" varchar DEFAULT NULL, "audio_url" varchar DEFAULT NULL, "image_url" varchar DEFAULT NULL, "is_curated" boolean DEFAULT NULL, "curated" boolean DEFAULT NULL, "duration_ms" integer DEFAULT NULL, "loop_ms" integer DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_asounds_on_name" ON "asounds" ("name")[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "asounds" ("id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at")
+                     SELECT "id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at" FROM "sounds"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "sounds"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "sounds" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "file_url" varchar DEFAULT NULL, "audio_url" varchar DEFAULT NULL, "image_url" varchar DEFAULT NULL, "is_curated" boolean DEFAULT NULL, "curated" boolean DEFAULT NULL, "duration_ms" integer DEFAULT NULL, "loop_ms" integer DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_sounds_on_name" ON "sounds" ("name")[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "sounds" ("id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at")
+                     SELECT "id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at" FROM "asounds"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "asounds"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "asounds" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "file_url" varchar DEFAULT NULL, "audio_url" varchar DEFAULT NULL, "image_url" varchar DEFAULT NULL, "is_curated" boolean DEFAULT NULL, "curated" boolean DEFAULT NULL, "duration_ms" integer DEFAULT NULL, "loop_ms" integer DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_asounds_on_name" ON "asounds" ("name")[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "asounds" ("id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at")
+                     SELECT "id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at" FROM "sounds"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "sounds"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "sounds" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "file_url" varchar DEFAULT NULL, "audio_url" varchar DEFAULT NULL, "image_url" varchar DEFAULT NULL, "is_curated" boolean DEFAULT NULL, "curated" boolean DEFAULT NULL, "duration_ms" integer DEFAULT NULL, "loop_ms" integer DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_sounds_on_name" ON "sounds" ("name")[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "sounds" ("id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at")
+                     SELECT "id","name","file_url","audio_url","image_url","is_curated","curated","duration_ms","loop_ms","created_at","updated_at" FROM "asounds"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "asounds"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20251029120808') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Started GET "/" for 127.0.0.1 at 2025-10-29 14:29:14 -0400
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by FocusController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering focus/index.html.erb within layouts/application
+  Rendered focus/index.html.erb within layouts/application (Duration: 0.5ms | Allocations: 252)
+  Rendered layout layouts/application.html.erb (Duration: 76.0ms | Allocations: 45654)
+Completed 200 OK in 112ms (Views: 81.5ms | ActiveRecord: 2.4ms | Allocations: 57164)
+
+
+Started GET "/" for 127.0.0.1 at 2025-10-29 15:42:53 -0400
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by FocusController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering focus/index.html.erb within layouts/application
+  Rendered focus/index.html.erb within layouts/application (Duration: 0.6ms | Allocations: 252)
+  Rendered layout layouts/application.html.erb (Duration: 130.9ms | Allocations: 48720)
+Completed 200 OK in 173ms (Views: 137.1ms | ActiveRecord: 2.0ms | Allocations: 60229)
+
+
