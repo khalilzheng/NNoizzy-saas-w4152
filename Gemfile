@@ -13,7 +13,7 @@ gem "stimulus-rails"
 gem "jbuilder"
 
 group :development, :test do
-  gem "sqlite3", "~> 1.7"
+  gem "sqlite3", "~> 2.7"
 
   gem "rspec-rails", "~> 6.0"
   gem "cucumber-rails", require: false
